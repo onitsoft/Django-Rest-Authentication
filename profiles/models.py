@@ -11,11 +11,12 @@ from easy_thumbnails.fields import ThumbnailerImageField
 from timezone_field import TimeZoneField
 from django.utils.translation import ugettext_lazy as _
 from model_utils.models import TimeStampedModel
-
+# from django_countries import CountryField
 
 from common.utils import generate_secure_hash, get_image_upload_path, get_external_url
 
 logger = logging.getLogger('tomigo.users.models')
+
 
 # class Location(models.Model):
 #     name = models.CharField(_('Name'), max_length=26, blank=False)

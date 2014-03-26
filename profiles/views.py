@@ -10,8 +10,10 @@ from rest_framework.response import Response
 from common.viewsets import NoDeleteModelViewSet
 
 from .serializers import (UserSerializer, AuthenticationSerializer,
-                          PasswordResetSerializer, PasswordResetCompleteSerializer)
-from .models import User, PasswordResetRequest
+                          PasswordResetSerializer,
+                          PasswordResetCompleteSerializer,
+                          MedicalProfileSerializer)
+from .models import User, PasswordResetRequest, MedicalProfile
 
 
 class CustomUserPermissions(BasePermission):
@@ -53,6 +55,14 @@ class CustomUserPermissions(BasePermission):
 
         return False
 
+
+class MedicalProfileViewSet(NoDeleteModelViewSet):
+    """
+    /users/me/profiles or  /users/profiles
+    """
+    model = MedicalProfile
+    serializer_class = MedicalProfileSerializer
+    permission_classes = (CustomUserPermissions, )
 
 class UserViewSet(NoDeleteModelViewSet):
     model = User

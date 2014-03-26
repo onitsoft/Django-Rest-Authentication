@@ -8,7 +8,7 @@ from common.fields import ImageURLField, CroppedImageURLField
 from common.serializers import CustomSerializer, CustomModelSerializer
 
 
-from .models import User, PasswordResetRequest
+from .models import User, PasswordResetRequest, MedicalProfile
 
 
 def validate_password(password):
@@ -112,6 +112,11 @@ class UserPhotosSerializer(UserSerializer):
         user = (self.context.get('current_user') or
                 getattr(self.context.get('request'), 'user', None))
         return obj == user
+
+
+class MedicalProfileSerializer(CustomModelSerializer):
+    class Meta:
+        model = MedicalProfile
 
 
 class AuthenticationSerializer(CustomSerializer):
