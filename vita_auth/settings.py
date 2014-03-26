@@ -90,6 +90,7 @@ ROOT_URLCONF = 'vita_auth.urls'
 
 WSGI_APPLICATION = 'vita_auth.wsgi.application'
 
+GEOIP_PATH = os.path.join(PROJECT_ROOT, 'GeoIP.dat')
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
@@ -112,6 +113,9 @@ TEMPLATE_DIRS = (
 )
 
 AUTH_USER_MODEL = 'profiles.User'
+
+MIN_PASSWORD_LENGTH = 4
+
 
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 7  # 1 week (in seconds)
 SESSION_SAVE_EVERY_REQUEST = True

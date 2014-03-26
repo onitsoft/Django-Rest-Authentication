@@ -61,6 +61,7 @@ class UserSerializer(CustomModelSerializer):
             fields.pop('show_welcome_dialog', None)
             fields.pop('last_ip', None)
             fields.pop('registration_ip', None)
+        return fields
 
     def to_native(self, obj):
         native = super(UserSerializer, self).to_native(obj)
