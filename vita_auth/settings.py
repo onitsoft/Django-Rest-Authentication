@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = 'fz%4rpd=u0m-813=a%itl)48i11!bsgiw#w@_($kiuigf(++py'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True\
 
 TEMPLATE_DEBUG = True
 
@@ -36,6 +36,11 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'easy_thumbnails',
+    'rest_framework',
+    'south',
+    'profiles',
 )
 
 MIDDLEWARE_CLASSES = (
