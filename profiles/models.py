@@ -93,6 +93,10 @@ class User(AbstractBaseUser):
         verbose_name = _('User')
         verbose_name_plural = _('Users')
 
+    def is_superuser(self):
+        return super()
+
+
     def get_full_name(self):
         """
         Returns the first_name plus the last_name, with a space in between.

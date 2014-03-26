@@ -25,7 +25,5 @@ class NoDeleteModelViewSet(mixins.CreateModelMixin,
 
     Like ModelViewSet but without DELETE ("destroy()").
 
-    ref: https://bitbucket.org/nimrodm/tomigorepo/issue/13/add-a-custom-viewset-without-the-delete
-
     Also includes the UpdateUserMixin.
     """

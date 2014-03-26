@@ -125,6 +125,7 @@ class LoginView(generics.GenericAPIView):
     serializer_class = AuthenticationSerializer
 
     def post(self, request):
+
         if request.user.is_authenticated():
             return Response({'non_field_errors': [_('Already logged in.')]},
                             status=status.HTTP_400_BAD_REQUEST)

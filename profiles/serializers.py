@@ -18,13 +18,6 @@ def validate_password(password):
     return True
 
 
-class NestedSocialCredentialsSerializer(CustomModelSerializer):
-    class Meta:
-        pass
-        # model = SocialCredentials
-        # fields = ('media_type', 'media_user_id')
-
-
 class UserSerializer(CustomModelSerializer):
     class Meta:
         model = User
@@ -47,15 +40,15 @@ class UserSerializer(CustomModelSerializer):
     image_crop_100 = CroppedImageURLField(source='image', thumbnail_alias='100')
     image_crop_mini = CroppedImageURLField(source='image', thumbnail_alias='mini')
 
-    def __init__(self, *args, **kwargs):
-        super(UserSerializer, self).__init__(*args, **kwargs)
-        import ipdb; ipdb.set_trace()
-        self.fields['first_name'].required = True
-        self.fields['last_name'].required = True
+    # def __init__(self, *args, **kwargs):
+    #     super(UserSerializer, self).__init__(*args, **kwargs)
+    #     # import ipdb; ipdb.set_trace()
+    #     self.fields['first_name'].required = True
+    #     self.fields['last_name'].required = True
 
-        if 'view' in self.context and self.context['view'].action == 'create':
-            # password is required only on creation
-            self.fields['password'].required = True
+    #     if 'view' in self.context and self.context['view'].action == 'create':
+    #         # password is required only on creation
+    #         self.fields['password'].required = True
 
     def get_fields(self):
         """
