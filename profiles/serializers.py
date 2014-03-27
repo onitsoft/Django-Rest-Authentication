@@ -40,15 +40,15 @@ class UserSerializer(CustomModelSerializer):
     image_crop_100 = CroppedImageURLField(source='image', thumbnail_alias='100')
     image_crop_mini = CroppedImageURLField(source='image', thumbnail_alias='mini')
 
-    # def __init__(self, *args, **kwargs):
-    #     super(UserSerializer, self).__init__(*args, **kwargs)
-    #     # import ipdb; ipdb.set_trace()
-    #     self.fields['first_name'].required = True
-    #     self.fields['last_name'].required = True
+    def __init__(self, *args, **kwargs):
+        super(UserSerializer, self).__init__(*args, **kwargs)
+        # import ipdb; ipdb.set_trace()
+        self.fields['first_name'].required = True
+        self.fields['last_name'].required = True
 
-    #     if 'view' in self.context and self.context['view'].action == 'create':
-    #         # password is required only on creation
-    #         self.fields['password'].required = True
+        if 'view' in self.context and self.context['view'].action == 'create':
+            # password is required only on creation
+            self.fields['password'].required = True
 
     def get_fields(self):
         """
@@ -117,6 +117,18 @@ class UserPhotosSerializer(UserSerializer):
 class MedicalProfileSerializer(CustomModelSerializer):
     class Meta:
         model = MedicalProfile
+
+        fields = ('user', 'name', 'age', 'average_us_nutrition', 'coffee_cups',
+                  'contraceptives', 'fluoride_enrich', 'health_goals',
+                  'health_goals_text', 'lactation', 'low_sodium_diet',
+                  'malabsorption', 'male', 'medicines', 'medicines_text',
+                  'melanin', 'pregnancy', 'rda', 'smoker', 'sunlight',
+                  'vegetarian', 'birthday')
+
+        def restore_object(self, attrs, instance=None):
+            obj = super(MedicalProfileSerializer, self).restore_object(attrs, instance)
+            obj["user"] = getattr(self.context.get('request'), 'user', None)
+            return obj
 
 
 class AuthenticationSerializer(CustomSerializer):

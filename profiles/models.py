@@ -20,7 +20,6 @@ logger = logging.getLogger('tomigo.users.models')
 
 # class Location(models.Model):
 #     name = models.CharField(_('Name'), max_length=26, blank=False)
-
 #     country = CountryField(blank=True)
 #     city = models.CharField(_('City'), max_length=100, blank=True)
 #     address = models.CharField(_('Address'), max_length=250, blank=True)
@@ -41,6 +40,8 @@ class UserManager(BaseUserManager):
 
         user.set_password(password)
         user.save(using=self._db)
+        user.is_staff = False
+        user.is_superuser = False
 
         return user
 
@@ -68,6 +69,9 @@ class User(AbstractBaseUser):
         _('staff status'), default=False,
         help_text=_('Designates whether the user can log into this admin site.'))
 
+    is_superuser = models.BooleanField(
+        _('Admin'), default=False,
+        help_text=_('Designates whether the user is an admin - has all permissions'))
     first_name = models.CharField(_('First name'), max_length=30, blank=True)
     last_name = models.CharField(_('Last name'), max_length=30, blank=True)
     phone = models.CharField(_('Phone number'), max_length=16, blank=True)
@@ -95,8 +99,8 @@ class User(AbstractBaseUser):
         verbose_name = _('User')
         verbose_name_plural = _('Users')
 
-    def is_superuser(self):
-        return super()
+    # def is_superuser(self):
+    #     return super()
 
 
     def get_full_name(self):
@@ -153,7 +157,11 @@ class User(AbstractBaseUser):
         #     self.timezone = pytz.country_timezones[self.location.country.code][0]
         # except (AttributeError, KeyError, IndexError):
         #     pass
+    def has_perm(self, perm, obj=None):
+      return self.is_staff
 
+    def has_module_perms(self, app_label):
+      return self.is_staff
 
 class MedicalProfile(TimeStampedModel):
     class Age:
@@ -195,27 +203,51 @@ class MedicalProfile(TimeStampedModel):
             (DARK_BROWN, 'Dark brown')
         )
 
-    user = models.ForeignKey('users.User', blank=False),
-    age = models.IntegerField(max_length=3, blank=True, choices=Age.CHOICES, verbose_name=_('age')),
-    average_us_nutrition = models.BooleanField(blank=True, verbose_name=_('nutrition')),
-    coffee_cups = models.IntegerField(blank=False, choices=CoffeCups.CHOICES, verbose_name=_('coffe cups')),
-    contraceptives = models.BooleanField(blank=True, verbose_name=_('on the pill')),
-    fluoride_enrich = models.BooleanField(blank=True),
-    health_goals = models.BooleanField(blank=True, verbose_name=_('health goals')),
-    health_goals_text = models.CharField(max_length=255, blank=True, verbose_name=_('health goals text')),
-    lactation = models.BooleanField(blank=True, verbose_name=_('nursing')),
-    low_sodium_diet = models.BooleanField(blank=True, verbose_name=_('low sodium diet')),
-    malabsorption = models.BooleanField(blank=True, verbose_name=_('malabsorption')),
-    male = models.BooleanField(blank=True, verbose_name=_('male')),
-    medicines_text = models.CharField(max_length=150, blank=True, verbose_name=_('regularly consumed medecies')),
-    medicines = models.BooleanField(blank=True, verbose_name=_('using medicines')),
-    melanin = models.IntegerField(blank=True, max_length=2, choices=SkinMelanin.CHOICES),
-    pregnancy = models.BooleanField(blank=True, verbose_name=_('pregnancy')),
-    rda = models.BooleanField(blank=True, verbose_name=_('recommended daily allowance(FDA)')),
-    smoker = models.BooleanField(blank=True, verbose_name=_('smoker)')),
-    sunlight = models.BooleanField(blank=True, verbose_name=_('hihg sunlight exposure')),
+    user = models.ForeignKey('profiles.User', blank=False)
+    name = models.CharField(max_length=25, blank=True, null=True,
+                            verbose_name=_("profile name"))
+    age = models.IntegerField(max_length=3, blank=True, null=True,
+                              choices=Age.CHOICES, verbose_name=_('age'))
+    average_us_nutrition = models.BooleanField(blank=True,
+                                               verbose_name=_('nutrition'))
+    coffee_cups = models.IntegerField(blank=True, null=True,
+                                      choices=CoffeCups.CHOICES,
+                                      verbose_name=_('coffe cups'))
+    contraceptives = models.BooleanField(blank=True,
+                                         verbose_name=_('on the pill'))
+    fluoride_enrich = models.BooleanField(blank=True)
+    health_goals = models.BooleanField(blank=True,
+                                       verbose_name=_('health goals'))
+    health_goals_text = models.CharField(max_length=255,
+                                         blank=True,
+                                         verbose_name=_('health goals text'))
+    lactation = models.BooleanField(blank=True,
+                                    verbose_name=_('nursing'))
+    low_sodium_diet = models.BooleanField(blank=True,
+                                          verbose_name=_('low sodium diet'))
+    malabsorption = models.BooleanField(blank=True,
+                                        verbose_name=_('malabsorption'))
+    male = models.BooleanField(blank=True, verbose_name=_('male'))
+    medicines_text = models.CharField(max_length=150, blank=True,
+                                      verbose_name=_('regularly consumed medecies'))
+    medicines = models.BooleanField(blank=True,
+                                    verbose_name=_('using medicines'))
+    melanin = models.IntegerField(blank=True, null=True, max_length=2,
+                                  choices=SkinMelanin.CHOICES)
+    pregnancy = models.BooleanField(blank=True, verbose_name=_('pregnancy'))
+    rda = models.BooleanField(blank=True, verbose_name=_('recommended daily allowance(FDA)'))
+    smoker = models.BooleanField(blank=True, verbose_name=_('smoker)'))
+    sunlight = models.BooleanField(blank=True, verbose_name=_('hihg sunlight exposure'))
     vegetarian = models.BooleanField(blank=True, verbose_name=_('vegeterian'))
-    birthday = models.DateTimeField(blank=True, verbose_name=_('birthday'))
+    birthday = models.DateTimeField(blank=True, null=True, verbose_name=_('birthday'))
+
+    class Meta:
+        verbose_name = _('Medical profile')
+        verbose_name_plural = _('Medical profiles')
+        def __unicode__(self):
+            return ("{profile}: {name}").format(profile=_("profile"),
+                                                name=self.name)
+
 
 
 class PasswordResetRequest(TimeStampedModel):

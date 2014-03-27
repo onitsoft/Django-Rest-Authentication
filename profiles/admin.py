@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.utils.translation import ugettext_lazy as _
 
-from models import User
+from models import User, MedicalProfile
 
 
 class UserCreationForm(forms.ModelForm):
@@ -73,3 +73,6 @@ class UserAdmin(DjangoUserAdmin):
     def close_user_account(self, request, queryset):
         """Custom admin action for closing user accounts"""
         queryset.update(status=User.Status.CLOSED)
+
+admin.site.register(User)
+admin.site.register(MedicalProfile)

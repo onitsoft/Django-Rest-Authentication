@@ -58,11 +58,42 @@ class CustomUserPermissions(BasePermission):
 
 class MedicalProfileViewSet(NoDeleteModelViewSet):
     """
-    /users/me/profiles or  /users/profiles
+    /users/me/profiles or  users/:userid/profiles
     """
     model = MedicalProfile
     serializer_class = MedicalProfileSerializer
-    permission_classes = (CustomUserPermissions, )
+    permission_classes = (IsAuthenticated, )
+
+    def get_object(self):
+        """
+        Handle regular lookup, and /users/me/
+        """
+        self.lookup = self.kwargs.get(self.lookup_field)
+        if self.lookup == 'me':
+            self.lookup = getattr(self.request.user, self.lookup_field, None)
+            self.kwargs[self.lookup_field] = self.lookup
+
+        return super(MedicalProfileViewSet, self).get_queryset()
+
+    def get_queryset(self):
+        """Limit the queryset for listing only"""
+        queryset = super(MedicalProfileViewSet, self).get_queryset()
+
+        # optimization:
+
+        if self.action != 'list' or self.request.user.is_superuser:
+            return queryset
+
+        user = self.request.user
+
+        if not user.is_authenticated():
+            return []
+
+        if user.is_staff:
+            return queryset
+
+        return queryset.filter(user=self.request.user.pk)
+
 
 class UserViewSet(NoDeleteModelViewSet):
     model = User
@@ -97,7 +128,7 @@ class UserViewSet(NoDeleteModelViewSet):
         if user.is_staff():
             return queryset.filter()
 
-        return queryset.filter(pk=self.request.user.pk)
+        return queryset.filter(user=self.request.user.pk)
 
     def post_save(self, obj, created):
         """
@@ -117,9 +148,6 @@ class UserViewSet(NoDeleteModelViewSet):
             user.backend = settings.AUTHENTICATION_BACKENDS[0]
             login(self.request, user)
 
-
-class ProfilesViewSet(NoDeleteModelViewSet):
-    pass
 
 
 class UserRolePermission(BasePermission):
