@@ -114,7 +114,7 @@ MIN_PASSWORD_LENGTH = 4
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 7  # 1 week (in seconds)
 SESSION_SAVE_EVERY_REQUEST = True
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
