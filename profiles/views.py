@@ -49,7 +49,7 @@ class CustomUserPermissions(BasePermission):
         if request.method not in SAFE_METHODS:
             return False
 
-        if user.is_staff():
+        if user.is_staff:
             # If a user that's in the staff can safely access any object
             return True
 
@@ -125,7 +125,7 @@ class UserViewSet(NoDeleteModelViewSet):
         if not user.is_authenticated():
             return []
 
-        if user.is_staff():
+        if user.is_staff:
             return queryset.filter()
 
         return queryset.filter(user=self.request.user.pk)
