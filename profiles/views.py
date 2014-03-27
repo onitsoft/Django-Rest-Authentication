@@ -68,10 +68,10 @@ class MedicalProfileViewSet(NoDeleteModelViewSet):
         """
         Handle regular lookup, and /users/me/
         """
-        self.lookup = self.kwargs.get(self.lookup_field)
-        if self.lookup == 'me':
-            self.lookup = getattr(self.request.user, self.lookup_field, None)
-            self.kwargs[self.lookup_field] = self.lookup
+        lookup = self.kwargs.get(self.lookup_field)
+        if lookup == 'me':
+            lookup = getattr(self.request.user, self.lookup_field, None)
+            self.kwargs[self.lookup_field] = lookup
 
         return super(MedicalProfileViewSet, self).get_queryset()
 
@@ -147,7 +147,6 @@ class UserViewSet(NoDeleteModelViewSet):
             # hack to set the auth backend to log the user in:
             user.backend = settings.AUTHENTICATION_BACKENDS[0]
             login(self.request, user)
-
 
 
 class UserRolePermission(BasePermission):

@@ -23,6 +23,7 @@ router.register(r'users/(?P<user_id>[\d]+|me)/profiles', MedicalProfileViewSet)
 
 
 urlpatterns = patterns(
+    '',
     url(r'^login/?$', LoginView.as_view(), name='login'),
     url(r'^logout/?$', LogoutView.as_view(), name='logout'),
     url(r'^password_reset/?$', PasswordResetView.as_view()),
@@ -31,6 +32,6 @@ urlpatterns = patterns(
 
     url(r'^', include(router.urls)),
 
-    url(r'^/?$', APIRootView.as_view(), name="root"),
+    url(r'^/$', APIRootView.as_view(), name="root"),
 
 )
