@@ -116,7 +116,7 @@ MIN_PASSWORD_LENGTH = 4
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 7  # 1 week (in seconds)
 SESSION_SAVE_EVERY_REQUEST = True
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
@@ -208,6 +208,17 @@ DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.signals.SignalDebugPanel',
     # 'debug_toolbar.panels.logger.LoggingPanel',
 )
+
+
+CACHES = {
+    "default": {
+        "BACKEND": "redis_cache.cache.RedisCache",
+        "LOCATION": "127.0.0.1:6379:1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "redis_cache.client.DefaultClient",
+        }
+    }
+}
 
 PATCH_SETTINGS = True  # Let django-debug-toolbar to patch settings if it's enabled.
 
