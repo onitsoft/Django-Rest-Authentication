@@ -38,7 +38,7 @@ class UserManager(BaseUserManager):
         """
         user = self.model(email=UserManager.normalize_email(email))
 
-        user.set_password(password)
+        # user.set_password(password)
         user.save(using=self._db)
         user.is_staff = False
         user.is_superuser = False
@@ -74,6 +74,7 @@ class User(AbstractBaseUser):
         help_text=_('Designates whether the user is an admin - has all permissions'))
     first_name = models.CharField(_('First name'), max_length=30, blank=True)
     last_name = models.CharField(_('Last name'), max_length=30, blank=True)
+    account_name = models.CharField(_('Nickname'), max_length=30, blank=True)
     phone = models.CharField(_('Phone number'), max_length=16, blank=True)
     # location = models.ForeignKey(Location, verbose_name=_('Location'),
                                  # blank=True, null=True)
@@ -163,6 +164,7 @@ class User(AbstractBaseUser):
     def has_module_perms(self, app_label):
       return self.is_staff
 
+
 class MedicalProfile(TimeStampedModel):
     class Age:
         YOUNGSTER = 27
@@ -175,16 +177,16 @@ class MedicalProfile(TimeStampedModel):
             (ELDER, ELDER)
         )
 
-    class CoffeCups:
-        ONE = 1
-        TWO = 2
-        THREE = 3
+    # class CoffeCups:
+    #     ONE = 1
+    #     TWO = 2
+    #     THREE = 3
 
-        CHOICES = (
-            (ONE, _('One')),
-            (TWO, _('Two')),
-            (THREE, _('Three')),
-        )
+    #     CHOICES = (
+    #         (ONE, _('One')),
+    #         (TWO, _('Two')),
+    #         (THREE, _('Three')),
+    #     )
 
     class SkinMelanin:
         PALE = 1
@@ -203,15 +205,14 @@ class MedicalProfile(TimeStampedModel):
             (DARK_BROWN, 'Dark brown')
         )
 
-    user = models.ForeignKey('profiles.User', blank=False)
+    user = models.ForeignKey('profiles.User', related_name='profiles', blank=False)
     name = models.CharField(max_length=25, blank=True, null=True,
                             verbose_name=_("profile name"))
     age = models.IntegerField(max_length=3, blank=True, null=True,
                               choices=Age.CHOICES, verbose_name=_('age'))
     average_us_nutrition = models.BooleanField(blank=True,
                                                verbose_name=_('nutrition'))
-    coffee_cups = models.IntegerField(blank=True, null=True,
-                                      choices=CoffeCups.CHOICES,
+    coffee_cups = models.BooleanField(blank=True,
                                       verbose_name=_('coffe cups'))
     contraceptives = models.BooleanField(blank=True,
                                          verbose_name=_('on the pill'))
@@ -235,7 +236,7 @@ class MedicalProfile(TimeStampedModel):
     melanin = models.IntegerField(blank=True, null=True, max_length=2,
                                   choices=SkinMelanin.CHOICES)
     pregnancy = models.BooleanField(blank=True, verbose_name=_('pregnancy'))
-    rda = models.BooleanField(blank=True, verbose_name=_('recommended daily allowance(FDA)'))
+    rda = models.BooleanField(blank=True, default=False, verbose_name=_('recommended daily allowance(FDA)'))
     smoker = models.BooleanField(blank=True, verbose_name=_('smoker)'))
     sunlight = models.BooleanField(blank=True, verbose_name=_('hihg sunlight exposure'))
     vegetarian = models.BooleanField(blank=True, verbose_name=_('vegeterian'))

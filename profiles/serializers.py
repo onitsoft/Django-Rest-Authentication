@@ -18,18 +18,59 @@ def validate_password(password):
     return True
 
 
+class MedicalProfileSerializer(CustomModelSerializer):
+    class Meta:
+        model = MedicalProfile
+
+        fields = ('id', 'user', 'name', 'age', 'average_us_nutrition', 'coffee_cups',
+                  'contraceptives', 'fluoride_enrich', 'health_goals',
+                  'health_goals_text', 'lactation', 'low_sodium_diet',
+                  'malabsorption', 'male', 'medicines', 'medicines_text',
+                  'melanin', 'pregnancy', 'rda', 'smoker', 'sunlight',
+                  'vegetarian', 'birthday')
+
+        def restore_object(self, attrs, instance=None):
+            obj = super(MedicalProfileSerializer, self).restore_object(attrs, instance)
+            obj["user"] = getattr(self.context.get('request'), 'user', None)
+            return obj
+
+
+class MedicalProfileNestedSerializer(serializers.ModelSerializer):
+    def _youngster(self, obj):
+        return obj.age == 27
+
+    def _adult(self, obj):
+        return obj.age == 43
+
+    def _elder(self, obj):
+        return obj.age == 60
+
+    youngster = serializers.SerializerMethodField('_youngster')
+    adult = serializers.SerializerMethodField('_adult')
+    elder = serializers.SerializerMethodField('_elder')
+
+    class Meta:
+        model = MedicalProfile
+        fields = ('id', 'name', 'age', 'average_us_nutrition', 'coffee_cups',
+                  'contraceptives', 'fluoride_enrich', 'health_goals',
+                  'health_goals_text', 'lactation', 'low_sodium_diet',
+                  'malabsorption', 'male', 'medicines', 'medicines_text',
+                  'melanin', 'pregnancy', 'rda', 'smoker', 'sunlight',
+                  'vegetarian', 'birthday', 'youngster', 'adult', 'elder',)
+
+
+# post only
 class UserSerializer(CustomModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'email', 'first_name', 'last_name',
-                  'phone',
-                  'last_ip', 'registration_ip',
-                  'password', 'show_welcome_dialog',
-                  'image', 'image_crop_mini', 'image_crop_100')
+        fields = ('id', 'email', 'account_name',
+                  'last_ip', 'registration_ip', 'show_welcome_dialog',
+                  'image', 'image_crop_mini', 'image_crop_100', 'profiles')
 
         read_only_fields = ('is_staff', 'last_ip',
                             'registration_ip',)
 
+    profiles = MedicalProfileNestedSerializer(many=False)
     password = serializers.CharField(
         label=_('Password'),
         help_text='Set the password, leave empty to keep the previous password',
@@ -39,16 +80,15 @@ class UserSerializer(CustomModelSerializer):
     image = ImageURLField(required=False)
     image_crop_100 = CroppedImageURLField(source='image', thumbnail_alias='100')
     image_crop_mini = CroppedImageURLField(source='image', thumbnail_alias='mini')
+    # def __init__(self, *args, **kwargs):
+    #     super(UserSerializer, self).__init__(*args, **kwargs)
+    #     # import ipdb; ipdb.set_trace()
+    #     self.fields['first_name'].required = True
+    #     self.fields['last_name'].required = True
 
-    def __init__(self, *args, **kwargs):
-        super(UserSerializer, self).__init__(*args, **kwargs)
-        # import ipdb; ipdb.set_trace()
-        self.fields['first_name'].required = True
-        self.fields['last_name'].required = True
-
-        if 'view' in self.context and self.context['view'].action == 'create':
-            # password is required only on creation
-            self.fields['password'].required = True
+    #     if 'view' in self.context and self.context['view'].action == 'create':
+    #         # password is required only on creation
+    #         self.fields['password'].required = True "image_crop_100": ""
 
     def get_fields(self):
         """
@@ -113,22 +153,6 @@ class UserPhotosSerializer(UserSerializer):
                 getattr(self.context.get('request'), 'user', None))
         return obj == user
 
-
-class MedicalProfileSerializer(CustomModelSerializer):
-    class Meta:
-        model = MedicalProfile
-
-        fields = ('user', 'name', 'age', 'average_us_nutrition', 'coffee_cups',
-                  'contraceptives', 'fluoride_enrich', 'health_goals',
-                  'health_goals_text', 'lactation', 'low_sodium_diet',
-                  'malabsorption', 'male', 'medicines', 'medicines_text',
-                  'melanin', 'pregnancy', 'rda', 'smoker', 'sunlight',
-                  'vegetarian', 'birthday')
-
-        def restore_object(self, attrs, instance=None):
-            obj = super(MedicalProfileSerializer, self).restore_object(attrs, instance)
-            obj["user"] = getattr(self.context.get('request'), 'user', None)
-            return obj
 
 
 class AuthenticationSerializer(CustomSerializer):

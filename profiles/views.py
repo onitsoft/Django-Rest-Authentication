@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.auth import login, logout
 from django.views.generic import TemplateView
 from django.utils.translation import ugettext_lazy as _
+from django.core.mail import send_mail
 
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated, BasePermission, SAFE_METHODS
@@ -56,6 +57,8 @@ class CustomUserPermissions(BasePermission):
         return False
 
 
+# class MedicalProfileView
+
 class MedicalProfileViewSet(NoDeleteModelViewSet):
     """
     /users/me/profiles or  users/:userid/profiles
@@ -64,16 +67,16 @@ class MedicalProfileViewSet(NoDeleteModelViewSet):
     serializer_class = MedicalProfileSerializer
     permission_classes = (IsAuthenticated, )
 
-    def get_object(self):
-        """
-        Handle regular lookup, and /users/me/
-        """
-        lookup = self.kwargs.get(self.lookup_field)
-        if lookup == 'me':
-            lookup = getattr(self.request.user, self.lookup_field, None)
-            self.kwargs[self.lookup_field] = lookup
+    # def get_object(self):
+    #     """
+    #     Handle regular lookup, and /users/me/
+    #     """
+    #     lookup = self.kwargs.get(self.lookup_field)
+    #     if lookup == 'me':
+    #         lookup = getattr(self.request.user, self.lookup_field, None)
+    #         self.kwargs[self.lookup_field] = lookup
 
-        return super(MedicalProfileViewSet, self).get_queryset()
+    #     return super(MedicalProfileViewSet, self).get_queryset()
 
     def get_queryset(self):
         """Limit the queryset for listing only"""
@@ -128,7 +131,7 @@ class UserViewSet(NoDeleteModelViewSet):
         if user.is_staff:
             return queryset.filter()
 
-        return queryset.filter(user=self.request.user.pk)
+        return queryset.filter(id=self.request.user.pk)
 
     def post_save(self, obj, created):
         """
@@ -140,8 +143,17 @@ class UserViewSet(NoDeleteModelViewSet):
         if created and obj.registration_ip:
             user.set_country_by_ip()
             user.set_timezone_by_country()
+            password = User.objects.make_random_password()
+            user.set_password(password)
             user.save()
 
+            #send email with password
+            subject = "Your password for your new VitaPersonal account"
+            email_list = [obj.email]
+            from_email = "dontreply@vitapersonal.com"
+            content = ("<h3>Your new password is {p}</h3>").format(p=password)
+            send_mail(subject, content, from_email,
+                      email_list, fail_silently=False)
         # login the user on creation
         if not self.request.user.is_authenticated() and created:
             # hack to set the auth backend to log the user in:

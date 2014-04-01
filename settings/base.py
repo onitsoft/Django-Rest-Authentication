@@ -62,6 +62,7 @@ INSTALLED_APPS = (
     'easy_thumbnails',
     'rest_framework',
     'south',
+    'corsheaders',
     'profiles',
 )
 
@@ -72,6 +73,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 )
 
 
@@ -210,11 +212,23 @@ DEBUG_TOOLBAR_PANELS = (
 PATCH_SETTINGS = True  # Let django-debug-toolbar to patch settings if it's enabled.
 
 
-AUTHOMATIC_SECRET_KEY = 'very_secret_key'
-
-#For the cgrome extensions
-CORS_ORIGIN_ALLOW_ALL = True
+#For the hrome extensions
+CORS_ORIGIN_ALLOW_ALL = False
+# CORS_ORIGIN_WHITELIST = ("*")
 CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_REGEX_WHITELIST = ('^chrome-extension://*')
+CORS_ALLOW_HEADERS = (
+    'x-requested-with',
+    'content-type',
+    'accept',
+    'origin',
+    'cache-control',
+    'Pragma',
+    'authorization',
+    'X-CSRFToken',
+
+)
+# CORS_ORIGIN_REGEX_WHITELIST = ()
 
 
 REST_FRAMEWORK = {

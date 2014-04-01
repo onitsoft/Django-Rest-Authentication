@@ -16,7 +16,7 @@ class CustomRouter(routers.SimpleRouter):
 router = CustomRouter()
 
 router.register(r'users', UserViewSet)
-router.register(r'users/(?P<user_id>[\d]+|me)/profiles', MedicalProfileViewSet)
+router.register(r'profiles', MedicalProfileViewSet)
 # NOTE: hacky way to represent nested current/user items
 # router.register(r'users/(?P<user_id>[\d]+|me)/profiles', ProfilesViewSet)
 
