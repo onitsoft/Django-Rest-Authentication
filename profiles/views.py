@@ -160,7 +160,7 @@ class UserViewSet(NoDeleteModelViewSet):
                                                              e=obj.email)
 
             html_content = ("<div style='font-family:arial'>"
-                            "<a href='http://www.vitapersonal.com'>"
+                            "<a href='http://www.vitapersonal.com?ref=email_logo'>"
                             "<img src='http://www.vitapersonal.com/wp-content/"
                             "themes/vitapersonal/images/vitapersonal-logo.png'"
                             " class='logo-main' alt='VitaPersonal'>"
@@ -173,7 +173,7 @@ class UserViewSet(NoDeleteModelViewSet):
                             "Your login is: {e}"
                             "<br><br><br>"
                             "Please visit us at "
-                            "<a href='http://www.vitapersonal.com'>"
+                            "<a href='http://www.vitapersonal.com/?ref=email'>"
                             "wwww.vitapersonal.com"
                             "</a>"
                             "<br><br>"
