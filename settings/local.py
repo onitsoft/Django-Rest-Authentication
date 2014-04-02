@@ -7,5 +7,8 @@ DATABASES = {
     }
 }
 
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 1025
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'hellgy'
+EMAIL_HOST_PASSWORD = '123q123q'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True

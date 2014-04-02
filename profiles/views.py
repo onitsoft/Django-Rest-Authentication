@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib.auth import login, logout
 from django.views.generic import TemplateView
 from django.utils.translation import ugettext_lazy as _
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
 
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated, BasePermission, SAFE_METHODS
@@ -151,9 +151,38 @@ class UserViewSet(NoDeleteModelViewSet):
             subject = "Your password for your new VitaPersonal account"
             email_list = [obj.email]
             from_email = "dontreply@vitapersonal.com"
-            content = ("<h3>Your new password is {p}</h3>").format(p=password)
-            send_mail(subject, content, from_email,
-                      email_list, fail_silently=False)
+            text_content = ("Welcome to VitaPersonal! \n\n"
+                            "Your new password is: {p} \n\n"
+                            "Your login is: {e} \n\n"
+                            "Please visit us at "
+                            "www.vitapersonal.com \n\n\n"
+                            "The Vita Personal Team").format(p=password,
+                                                             e=obj.email)
+
+            html_content = ("<div style='font-family:arial'>"
+                            "<a href='http://www.vitapersonal.com'>"
+                            "<img src='http://www.vitapersonal.com/wp-content/"
+                            "themes/vitapersonal/images/vitapersonal-logo.png'"
+                            " class='logo-main' alt='VitaPersonal'>"
+                            "</a>"
+                            "<br><br>"
+                            "Welcome to VitaPersonal!"
+                            "<br><br>"
+                            "Your new password is: {p}"
+                            "<br><br>"
+                            "Your login is: {e}"
+                            "<br><br><br>"
+                            "Please visit us at "
+                            "<a href='http://www.vitapersonal.com'>"
+                            "wwww.vitapersonal.com"
+                            "</a>"
+                            "<br><br>"
+                            "The Vita Personal Team"
+                            "<div>").format(p=password, e=obj.email)
+            msg = EmailMultiAlternatives(subject, text_content, from_email,
+                                         email_list)
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
         # login the user on creation
         if not self.request.user.is_authenticated() and created:
             # hack to set the auth backend to log the user in:
