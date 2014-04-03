@@ -135,7 +135,7 @@ class UserViewSet(NoDeleteModelViewSet):
 
     def post_save(self, obj, created):
         """
-        Save registration ip and log the user in.
+        Save registration ip and log the user in, email password via SendGrid
         """
         super(UserViewSet, self).post_save(obj, created)
         user = obj
