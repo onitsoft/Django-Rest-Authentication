@@ -74,7 +74,7 @@ class User(AbstractBaseUser):
         help_text=_('Designates whether the user is an admin - has all permissions'))
     first_name = models.CharField(_('First name'), max_length=30, blank=True)
     last_name = models.CharField(_('Last name'), max_length=30, blank=True)
-    account_name = models.CharField(_('Nickname'), max_length=30, blank=True)
+    account_name = models.CharField(_('Name'), max_length=30, blank=False)
     phone = models.CharField(_('Phone number'), max_length=16, blank=True)
     # location = models.ForeignKey(Location, verbose_name=_('Location'),
                                  # blank=True, null=True)
