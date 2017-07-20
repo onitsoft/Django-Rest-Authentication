@@ -1,15 +1,14 @@
-from base import *
+from .base import *
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'vita_auth',
-        'USER': 'vita_auth',
-        'HOST': 'db1.cww4gfvmqeyv.us-east-1.rds.amazonaws.com',
-        'PASSWORD': 'cfa5157a22b3f6184',
-        'PORT': '3306',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(PROJECT_ROOT, 'db.sqlite3'),
     }
 }
 
-DEBUG = False
-TEMPLATE_DEBUG = DEBUG
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'hellgy'
+EMAIL_HOST_PASSWORD = '123q123q'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True

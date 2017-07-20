@@ -15,14 +15,13 @@ import os
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 PROJECT_ROOT = os.path.join(BASE_DIR, '..')
 
-
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-
 
 ADMINS = (
     ('Oleg', 'hellgy@gmail.com'),
 )
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
@@ -40,7 +39,7 @@ ALLOWED_HOSTS = ('*')
 gettext = lambda x: x
 LANGUAGES = (
     ('en', gettext('English')),
-    ('he', gettext('Hebrew')),
+    ('ru', gettext('Hebrew')),
 )
 
 # Application definition
@@ -57,11 +56,9 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'rest_framework',
     'django.contrib.staticfiles',
-    'rest_framework',
     'easy_thumbnails',
-    'rest_framework',
-    'south',
     'corsheaders',
     'profiles',
 )
@@ -98,6 +95,8 @@ GEOIP_PATH = os.path.join(PROJECT_ROOT, 'GeoIP.dat')
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
+import os
+SETTINGS_PATH = os.path.dirname(os.path.dirname(__file__))
 
 ROOT_URLCONF = 'vita_auth.urls'
 
@@ -213,7 +212,7 @@ DEBUG_TOOLBAR_PANELS = (
 PATCH_SETTINGS = True  # Let django-debug-toolbar to patch settings if it's enabled.
 
 
-#For the hrome extensions
+#For the chrome extensions
 CORS_ORIGIN_ALLOW_ALL = False
 # CORS_ORIGIN_WHITELIST = ("*")
 CORS_ALLOW_CREDENTIALS = True
@@ -240,6 +239,11 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
-    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',
-                                'rest_framework.filters.OrderingFilter')
+    'DEFAULT_FILTER_BACKENDS': (
+        'rest_framework.filters.DjangoFilterBackend',
+        'rest_framework.filters.OrderingFilter'
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    )
 }
