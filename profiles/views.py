@@ -57,9 +57,7 @@ class CustomUserPermissions(BasePermission):
         return False
 
 
-# class MedicalProfileView
-
-class MedicalProfileViewSet(NoDeleteModelViewSet):
+class ProfileViewSet(NoDeleteModelViewSet):
     """
     /users/me/profiles or  users/:userid/profiles
     """
@@ -80,7 +78,7 @@ class MedicalProfileViewSet(NoDeleteModelViewSet):
 
     def get_queryset(self):
         """Limit the queryset for listing only"""
-        queryset = super(MedicalProfileViewSet, self).get_queryset()
+        queryset = super(ProfileViewSet, self).get_queryset()
 
         # optimization:
 

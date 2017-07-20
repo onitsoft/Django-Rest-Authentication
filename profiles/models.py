@@ -1,5 +1,4 @@
 from django.db import models
-# from django_countries import CountryField
 
 import logging
 import pygeoip
@@ -18,17 +17,16 @@ from common.utils import generate_secure_hash, get_image_upload_path, get_extern
 logger = logging.getLogger('tomigo.users.models')
 
 
-# class Location(models.Model):
-#     name = models.CharField(_('Name'), max_length=26, blank=False)
-#     country = CountryField(blank=True)
-#     city = models.CharField(_('City'), max_length=100, blank=True)
-#     address = models.CharField(_('Address'), max_length=250, blank=True)
+class Location(models.Model):
+    name = models.CharField(_('Name'), max_length=26, blank=False)
+    # country = CountryField(blank=True)
+    city = models.CharField(_('City'), max_length=100, blank=True)
+    address = models.CharField(_('Address'), max_length=250, blank=True)
 
-#     is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True)
 
-#     def __unicode__(self):
-#         return self.name or unicode(self.country.name)
-# logger = logging.getLogger('vita_auth.profile.models')
+    def __str__(self):
+        return self.name or self.country.name
 
 
 class UserManager(BaseUserManager):
@@ -79,8 +77,8 @@ class User(AbstractBaseUser):
     # location = models.ForeignKey(Location, verbose_name=_('Location'),
                                  # blank=True, null=True)
 
-    registration_ip = models.IPAddressField(blank=True, null=True)
-    last_ip = models.IPAddressField(blank=True, null=True)
+    registration_ip = models.GenericIPAddressField(blank=True, null=True)
+    last_ip = models.GenericIPAddressField(blank=True, null=True)
 
     last_activity = models.DateTimeField(null=True, blank=True)
 
@@ -154,101 +152,32 @@ class User(AbstractBaseUser):
         Try guessing the user's timezone by location.country
         """
 
-        # try:
-        #     self.timezone = pytz.country_timezones[self.location.country.code][0]
-        # except (AttributeError, KeyError, IndexError):
-        #     pass
+        try:
+            self.timezone = pytz.country_timezones[self.location.country.code][0]
+        except (AttributeError, KeyError, IndexError):
+            pass
+
     def has_perm(self, perm, obj=None):
-      return self.is_staff
+        return self.is_staff
 
     def has_module_perms(self, app_label):
-      return self.is_staff
+        return self.is_staff
 
 
 class MedicalProfile(TimeStampedModel):
-    class Age:
-        YOUNGSTER = 27
-        ADULT = 43
-        ELDER = 60
-
-        CHOICES = (
-            (YOUNGSTER, YOUNGSTER),
-            (ADULT, ADULT),
-            (ELDER, ELDER)
-        )
-
-    # class CoffeCups:
-    #     ONE = 1
-    #     TWO = 2
-    #     THREE = 3
-
-    #     CHOICES = (
-    #         (ONE, _('One')),
-    #         (TWO, _('Two')),
-    #         (THREE, _('Three')),
-    #     )
-
-    class SkinMelanin:
-        PALE = 1
-        FAIR = 2
-        WHITE = 3
-        LIGHT_BROWN = 4
-        BROWN = 5
-        DARK_BROWN = 6
-
-        CHOICES = (
-            (PALE, 'Pale'),
-            (FAIR, 'Fair'),
-            (WHITE, 'White'),
-            (LIGHT_BROWN, 'Light brown'),
-            (BROWN, 'Brown'),
-            (DARK_BROWN, 'Dark brown')
-        )
+    class Meta:
+        verbose_name = _('Medical profile')
+        verbose_name_plural = _('Medical profiles')
 
     user = models.ForeignKey('profiles.User', related_name='profiles', blank=False)
     name = models.CharField(max_length=25, blank=True, null=True,
                             verbose_name=_("profile name"))
-    age = models.IntegerField(max_length=3, blank=True, null=True,
-                              choices=Age.CHOICES, verbose_name=_('age'))
-    average_us_nutrition = models.BooleanField(blank=True,
-                                               verbose_name=_('nutrition'))
-    coffee_cups = models.BooleanField(blank=True,
-                                      verbose_name=_('coffe cups'))
-    contraceptives = models.BooleanField(blank=True,
-                                         verbose_name=_('on the pill'))
-    fluoride_enrich = models.BooleanField(blank=True)
-    health_goals = models.BooleanField(blank=True,
-                                       verbose_name=_('health goals'))
-    health_goals_text = models.CharField(max_length=255,
-                                         blank=True,
-                                         verbose_name=_('health goals text'))
-    lactation = models.BooleanField(blank=True,
-                                    verbose_name=_('nursing'))
-    low_sodium_diet = models.BooleanField(blank=True,
-                                          verbose_name=_('low sodium diet'))
-    malabsorption = models.BooleanField(blank=True,
-                                        verbose_name=_('malabsorption'))
-    male = models.BooleanField(blank=True, verbose_name=_('male'))
-    medicines_text = models.CharField(max_length=150, blank=True,
-                                      verbose_name=_('regularly consumed medecies'))
-    medicines = models.BooleanField(blank=True,
-                                    verbose_name=_('using medicines'))
-    melanin = models.IntegerField(blank=True, null=True, max_length=2,
-                                  choices=SkinMelanin.CHOICES)
-    pregnancy = models.BooleanField(blank=True, verbose_name=_('pregnancy'))
-    rda = models.BooleanField(blank=True, default=False, verbose_name=_('recommended daily allowance(FDA)'))
-    smoker = models.BooleanField(blank=True, verbose_name=_('smoker)'))
-    sunlight = models.BooleanField(blank=True, verbose_name=_('hihg sunlight exposure'))
-    vegetarian = models.BooleanField(blank=True, verbose_name=_('vegeterian'))
+
     birthday = models.DateTimeField(blank=True, null=True, verbose_name=_('birthday'))
 
-    class Meta:
-        verbose_name = _('Medical profile')
-        verbose_name_plural = _('Medical profiles')
-        def __unicode__(self):
-            return ("{profile}: {name}").format(profile=_("profile"),
-                                                name=self.name)
-
+    def __str__(self):
+        return "{profile}: {name}".format(profile=_("profile"),
+                                          name=self.name)
 
 
 class PasswordResetRequest(TimeStampedModel):

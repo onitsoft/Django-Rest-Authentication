@@ -1,10 +1,10 @@
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from rest_framework import routers
 from common.views import APIRootView
 from profiles.views import (UserViewSet, LoginView, LogoutView,
                             PasswordResetView,
                             PasswordResetCompleteView,
-                            MedicalProfileViewSet)
+                            ProfileViewSet)
 
 
 class CustomRouter(routers.SimpleRouter):
@@ -15,22 +15,18 @@ class CustomRouter(routers.SimpleRouter):
 
 router = CustomRouter()
 
-router.register(r'users', UserViewSet)
-router.register(r'profiles', MedicalProfileViewSet)
+router.register(r'users', UserViewSet, base_name='user')
+router.register(r'profiles', ProfileViewSet, base_name='profile')
 # NOTE: hacky way to represent nested current/user items
 # router.register(r'users/(?P<user_id>[\d]+|me)/profiles', ProfilesViewSet)
 
 
-urlpatterns = patterns(
-    url(r'^/?$', APIRootView.as_view(), name="root"),
+urlpatterns = [
+    url(r'', APIRootView.as_view(), name="root"),
     url(r'^login/?$', LoginView.as_view(), name='login'),
     url(r'^logout/?$', LogoutView.as_view(), name='logout'),
     url(r'^password_reset/?$', PasswordResetView.as_view()),
     url(r'^password_reset_complete/?$', PasswordResetCompleteView.as_view()),
     # url(r'^check_version', CheckVersionView.as_view()),
-
     url(r'^', include(router.urls)),
-
-
-
-)
+]
